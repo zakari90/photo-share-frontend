@@ -1,14 +1,13 @@
 import './App.css'
 import LoginPage from './pages/login'
-import RegisterPage from './pages/register.'
+import RegisterationPage from './pages/registrattion'
 
 function App() {
 
   return (
     <>
     <LoginPage/>
-    <RegisterPage/>
-    
+    <RegisterationPage/>
     </>
   )
 }

@@ -2,22 +2,22 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-const LoginFormSchema = z.object(
+const RegisterFormSchema = z.object(
     {
         email: z.email({ message: "Invalid email address" }),
         password: z.string().min(1, { message: "Password must be at least 6 characters long" }),
     }
 )
 
-type FormData = z.infer<typeof LoginFormSchema>;
+type FormData = z.infer<typeof RegisterFormSchema>;
 
-export default function LoginPage() {
+export default function Registeration() {
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<FormData>({
-    resolver: zodResolver(LoginFormSchema),
+    resolver: zodResolver(RegisterFormSchema),
   });
 
   const onSubmit = (data: FormData) => {
@@ -26,6 +26,7 @@ export default function LoginPage() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
+
 
       <div>
         <label>Email</label>
