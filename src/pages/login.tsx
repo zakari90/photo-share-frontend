@@ -1,6 +1,8 @@
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
+import { Link } from 'react-router-dom';
 
 const LoginFormSchema = z.object(
     {
@@ -20,26 +22,56 @@ export default function LoginPage() {
     resolver: zodResolver(LoginFormSchema),
   });
 
-  const onSubmit = (data: FormData) => {
-    console.log("Form Data:", data);
+  const [isPending, setIsPending] = useState(false);
+
+  const onSubmit = async (data: FormData) => {
+    setIsPending(true);
+    try {
+      console.log("Form Data:", data);
+      await new Promise((resolve) => setTimeout(resolve, 2000)); // simulate API call
+    } catch (error) {
+      console.error("Submission error:", error);
+    } finally {
+      setIsPending(false);
+    }
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <div className="bg-white p-8 rounded-lg shadow-md w-96">
+    <h1 className="text-2xl font-bold mb-6 text-center">Register</h1>
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
 
       <div>
-        <label>Email</label>
-        <input {...register("email")} />
+        <input {...register("email")}
+        placeholder="Email"
+        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
+
+        />
         {errors.email && <p>{errors.email.message}</p>}
       </div>
 
       <div>
-        <label>Password</label>
-        <input type="password" {...register("password")} />
+        <input type="password" {...register("password")}
+        placeholder="Password"
+        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
+
+        />
         {errors.password && <p>{errors.password.message}</p>}
       </div>
+      <div>
+        <button
+          // disabled={isPending}
+          type="submit"
+          className="bg-amber-600"
+        >
+          {isPending ? "Loading..." : "LogIn"}
+        </button>
+        <p>
+          Don't have an account? <Link to="/register" className="text-blue-500">Rgister</Link>
+        </p>
+      </div>
 
-      <button type="submit">Submit</button>
     </form>
+    </div>
   );
 }
