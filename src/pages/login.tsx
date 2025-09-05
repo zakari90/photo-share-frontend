@@ -60,9 +60,9 @@ export default function LoginPage() {
       </div>
       <div>
         <button
-          // disabled={isPending}
+          disabled={isPending}
           type="submit"
-          className="bg-amber-600"
+          className="bg-blue-500 text-white px-4 py-2 rounded-md w-full"
         >
           {isPending ? "Loading..." : "LogIn"}
         </button>
