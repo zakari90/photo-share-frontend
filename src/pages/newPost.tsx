@@ -24,7 +24,7 @@ function NewPost() {
         htmlFor="file-upload"
         className="m-auto cursor-pointer inline-block bg-yellow-200 text-black px-4 py-2 rounded-md hover:bg-blue-700 transition"
       >
-        <svg fill="#000000" height="20px" width="20px" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
+        <svg fill="#000000" height="20px" width="20px" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg"
 	 viewBox="0 0 491.601 491.601" xml:space="preserve">
 <g>
 	<path d="M463.1,175.45c-14-14.3-31.5-24-50.7-28.1c-4.9-37.4-22.1-71.9-49.4-98.6c-31.7-30.9-73.6-48-117.9-48s-86.2,17-117.9,48
@@ -36,7 +36,6 @@ function NewPost() {
 		s125.9,54.6,127.7,124.4c0.3,10.9,9,19.7,19.9,20c32.5,0.9,57.9,27.1,57.9,59.6C450.7,278.45,423.9,305.25,391.1,305.25z"/>
 </g>
 </svg>
-        {/* Upload File */}
       </label>
       <input
         id="file-upload"
@@ -53,7 +52,7 @@ function NewPost() {
         >
           {isPending ? "Loading..." : "submit"}
         </button>    
-        </div>
+    </div>
   )
 }
 

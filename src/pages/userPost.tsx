@@ -2,6 +2,7 @@ import { useState } from "react";
 
 export type ImageProps={
   id:string;
+  title?:string;
   url:string;
   description?:string;
   userId:string;
@@ -13,6 +14,7 @@ export type ImageProps={
 const images: ImageProps[]=[
   {
     id:"1",
+    title:"title",
     url:"https://images.unsplash.com/photo-1506744038136-46273834b3fb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80",
     description:"A beautiful sunrise",
     userId:"user1",
@@ -36,7 +38,7 @@ const images: ImageProps[]=[
     updatedAt:new Date(),
   }
 ]
-export default function HomePage() {
+export default function UserPage() {
   const [selectedImage, setSelectedImage] = useState<ImageProps | null>(null);
   return (
 <>
@@ -57,8 +59,7 @@ export default function HomePage() {
 </div>
       {selectedImage && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50"
-          onClick={() => setSelectedImage(null)}
+          className="fixed inset-0  m-auto bg-black bg-opacity-80 flex items-center justify-center z-50"
         >
           <div className="relative max-w-4xl w-full px-4">
             <img
@@ -66,17 +67,36 @@ export default function HomePage() {
               alt={selectedImage.description || "Full image"}
               className="w-full h-auto rounded-md object-contain"
             />
+            <div className="md:w-1/2 m-auto">
+
             {selectedImage.description && (
-              <p className="text-white mt-4 text-center">
-                {selectedImage.description}
-              </p>
+              <>
+              <input type="text"
+                      className="text-white mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
+                      placeholder={selectedImage.title}/>
+                              <textarea 
+                      className="text-white mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
+                      placeholder={selectedImage.description}
+                      /> 
+              </>
             )}
+            <div className="m-auto mt-2 flex justify-between w-1/2">
+
             <button
               onClick={() => setSelectedImage(null)}
-              className="absolute top-4 right-4 text-white text-2xl font-bold"
+          className="m-auto bg-red-500 text-white px-4 py-2 rounded-md w-fit"
             >
-              ✕
+              save
             </button>
+            <button
+              onClick={() => setSelectedImage(null)}
+          className="m-auto bg-blue-500 text-white px-4 py-2 rounded-md w-fit"
+            >
+              cancel
+            </button>
+            </div>
+            </div>
+
           </div>
         </div>
       )}
