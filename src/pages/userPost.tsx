@@ -5,26 +5,8 @@ import { API_URL, GET_MY_POSTS } from "../config/urls";
 import AuthContext from "../context/auth-context";
 import { BiEdit } from "react-icons/bi";
 import { MdDelete } from "react-icons/md";
+import type { LikeStatus, PostProps } from "./home";
 
-type PostProps = {
-  _id: string;
-  title?: string;
-  description?: string;
-  imageUrl: string;
-  creator: {
-    _id: string;
-    username: string;
-  };
-  createdAt: string;
-  updatedAt: string;
-};
-
-type LikeStatus = {
-  [postId: string]: {
-    count: number;
-    userLiked: boolean;
-  };
-};
 
 export default function MyPostsPage() {
   const [selectedPost, setSelectedPost] = useState<PostProps | null>(null);
@@ -145,9 +127,7 @@ export default function MyPostsPage() {
       <div
         key={post._id}
         className="relative rounded-xl group w-full h-64 overflow-hidden bg-amber-300 cursor-pointer"
-        onClick={() => setSelectedPost(post)}
       >
-        {/* Edit Icon */}
         <BiEdit
           className="absolute top-4 left-2 text-blue-500 text-2xl cursor-pointer z-10"
           onClick={(e) => {
@@ -156,7 +136,6 @@ export default function MyPostsPage() {
           }}
         />
 
-        {/* Delete Icon */}
         <MdDelete
           className="absolute top-4 right-2 text-red-500 text-2xl cursor-pointer z-10"
           onClick={(e) => {
@@ -165,14 +144,12 @@ export default function MyPostsPage() {
           }}
         />
 
-        {/* Image */}
         <img
           src={API_URL + post.imageUrl}
           alt={post.description || "Photo"}
           className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-105"
         />
 
-        {/* Like Button */}
         {isLoggedIn && (
           <div
             onClick={(e) => {
@@ -202,53 +179,61 @@ export default function MyPostsPage() {
   )}
 </div>
 
+{selectedPost && (
+  <div
+    className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 overflow-auto p-4"
+    onClick={handleCancel}
+  >
+    <div
+      className="relative w-full max-w-xl bg-transparent"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <img
+        src={API_URL + selectedPost.imageUrl}
+        alt={selectedPost.description || "Full image"}
+        className="w-full max-h-[50vh] rounded-md object-contain mx-auto"
+      />
 
-      {selectedPost && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50"
-          onClick={handleCancel}
+      <div className="text-white mt-4 text-center overflow-auto max-h-[30vh]">
+        <input
+          type="text"
+          className="bg-black text-white mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
+          value={editTitle}
+          onChange={(e) => setEditTitle(e.target.value)}
+        />
+        <textarea
+          className="bg-black text-white mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md resize-none"
+          value={editDescription}
+          onChange={(e) => setEditDescription(e.target.value)}
+        />
+      </div>
+
+      <div className="mt-4 flex justify-between w-1/2 m-auto">
+        <button
+          onClick={handleSave}
+          className="bg-blue-500 text-white px-4 py-2 rounded-md"
         >
-          <div
-            className="absolute p-10 md:p-2 top-5 md:top-5 max-w-xl "
-            onClick={(e) => e.stopPropagation()}
-          >
-            <img
-              src={API_URL + selectedPost.imageUrl}
-              alt={selectedPost.description || "Full image"}
-              className="w-full h-auto rounded-md object-contain"
-            />
+          Save
+        </button>
+        <button
+          onClick={handleCancel}
+          className="bg-red-500 text-white px-4 py-2 rounded-md"
+        >
+          Cancel
+        </button>
+      </div>
 
-            <div className="text-white mt-4 text-center overflow-auto">
-              <input
-                type="text"
-                className="bg-black text-white mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
-                value={editTitle}
-                onChange={(e) => setEditTitle(e.target.value)}
-              />
-              <textarea
-                className="bg-black text-white mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
-                value={editDescription}
-                onChange={(e) => setEditDescription(e.target.value)}
-              />
-            </div>
+      {/* Close Button */}
+      <button
+        onClick={handleCancel}
+        className="absolute top-2 right-2 text-white text-2xl font-bold"
+      >
+        ✕
+      </button>
+    </div>
+  </div>
+)}
 
-            <div className="m-auto mt-2 flex justify-between w-1/2">
-              <button
-                onClick={handleSave}
-                className="bg-green-600 text-white px-4 py-2 rounded-md"
-              >
-                Save
-              </button>
-              <button
-                onClick={handleCancel}
-                className="bg-red-600 text-white px-4 py-2 rounded-md"
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </>
   );
 }

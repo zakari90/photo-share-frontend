@@ -4,7 +4,7 @@ import instance from "../config/axios";
 import { API_URL, GET_ALL_POSTS } from "../config/urls";
 import AuthContext from "../context/auth-context";
 
-type PostProps = {
+export type PostProps = {
   _id: string;
   title?: string;
   description?: string;
@@ -17,7 +17,7 @@ type PostProps = {
   updatedAt: string;
 };
 
-type LikeStatus = {
+export type LikeStatus = {
   [postId: string]: {
     count: number;
     userLiked: boolean;
@@ -133,44 +133,45 @@ export default function HomePage() {
   )}
 </div>
 
-      {selectedPost && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50"
-          onClick={() => setSelectedPost(null)}
-        >
-          <div
-            className="absolute p-10 md:p-2 top-5 md:top-5 max-w-xl "
-            onClick={(e) => e.stopPropagation()}
-          >
-            <img
-              src={API_URL + selectedPost.imageUrl}
-              alt={selectedPost.description || "Full image"}
-              className="w-full h-auto rounded-md object-contain"
-            />
+{selectedPost && (
+  <div
+    className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 overflow-auto p-4"
+    onClick={() => setSelectedPost(null)}
+  >
+    <div
+      className="relative max-w-xl w-full bg-transparent"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <img
+        src={API_URL + selectedPost.imageUrl}
+        alt={selectedPost.description || "Full image"}
+        className="w-full max-h-[80vh] rounded-md object-contain mx-auto"
+      />
 
-            <div className="text-white mt-4 text-center overflow-auto">
-              {selectedPost.title && (
-                <p className="text-lg font-semibold">{selectedPost.title}</p>
-              )}
-              {selectedPost.description && (
-                <p className="text-sm mt-1">{selectedPost.description}</p>
-              )}
-              {selectedPost.creator?.username && (
-                <p className="text-xs text-gray-400 mt-2">
-                  by {selectedPost.creator.username}
-                </p>
-              )}
-            </div>
+      <div className="text-white mt-4 text-center overflow-auto max-h-[20vh]">
+        {selectedPost.title && (
+          <p className="text-lg font-semibold">{selectedPost.title}</p>
+        )}
+        {selectedPost.description && (
+          <p className="text-sm mt-1">{selectedPost.description}</p>
+        )}
+        {selectedPost.creator?.username && (
+          <p className="text-xs text-gray-400 mt-2">
+            by {selectedPost.creator.username}
+          </p>
+        )}
+      </div>
 
-            <button
-              onClick={() => setSelectedPost(null)}
-              className="absolute top-1 right-6 text-white text-2xl font-bold"
-            >
-              ✕
-            </button>
-          </div>
-        </div>
-      )}
+      <button
+        onClick={() => setSelectedPost(null)}
+        className="absolute top-1 right-2 text-white text-2xl font-bold"
+      >
+        ✕
+      </button>
+    </div>
+  </div>
+)}
+
     </>
   );
 }

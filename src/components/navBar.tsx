@@ -25,6 +25,8 @@ export default function MainNavigation() {
         <div className="hidden md:flex items-center space-x-6">
           <ul className="flex space-x-4 items-center">
             {value.token && (
+              <>
+
               <li>
                 <NavLink
                   to="/userPage"
@@ -37,6 +39,16 @@ export default function MainNavigation() {
                   My Posts
                 </NavLink>
               </li>
+                               <li>
+                <NavLink
+                  to="/newPost"
+                  onClick={handleLinkClick}
+                  className="block text-gray-700 hover:text-blue-500"
+                >
+                New Post
+                </NavLink>
+              </li>
+              </>
             )}
             {!value.token && (
             <>
