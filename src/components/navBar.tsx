@@ -1,7 +1,7 @@
-import React, { useContext, useState } from 'react';
+import { useContext, useState } from 'react';
+import { HiMenu, HiX } from 'react-icons/hi';
 import { NavLink, useLocation } from 'react-router-dom';
 import AuthContext from '../context/auth-context';
-import { HiMenu, HiX } from 'react-icons/hi'; 
 
 export default function MainNavigation() {
   const value = useContext(AuthContext);

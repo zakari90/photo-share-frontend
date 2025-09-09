@@ -4,9 +4,6 @@ import instance from "../config/axios";
 import { API_URL, GET_ALL_POSTS } from "../config/urls";
 import AuthContext from "../context/auth-context";
 
-// ----------------------
-// Type Definitions
-// ----------------------
 type PostProps = {
   _id: string;
   title?: string;
