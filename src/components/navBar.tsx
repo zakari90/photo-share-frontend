@@ -118,7 +118,7 @@ export default function MainNavigation() {
                   onClick={handleLinkClick}
                   className="block text-gray-700 hover:text-blue-500"
                 >
-                new post
+                New Post
                 </NavLink>
               </li>
               </>
