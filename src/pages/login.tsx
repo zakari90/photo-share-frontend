@@ -59,7 +59,9 @@ export default function LoginPage() {
         className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
 
         />
-        {errors.email && <p>{errors.email.message}</p>}
+        {errors.email && <p
+        className="text-red-500 text-sm mt-1"
+        >{errors.email.message}</p>}
       </div>
 
       <div>
@@ -68,13 +70,15 @@ export default function LoginPage() {
         className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
 
         />
-        {errors.password && <p>{errors.password.message}</p>}
+        {errors.password && <p 
+        className="text-red-500 text-sm mt-1"
+        >{errors.password.message}</p>}
       </div>
       <div>
         <button
           disabled={isPending}
           type="submit"
-          className="bg-blue-500 text-white px-4 py-2 rounded-md w-full"
+          className="hover:cursor-pointer bg-blue-500 text-white px-4 py-2 rounded-md w-full"
         >
           {isPending ? "Loading..." : "LogIn"}
         </button>

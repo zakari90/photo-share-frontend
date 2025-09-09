@@ -34,6 +34,7 @@ export default function RegistrationPage() {
   } = useForm<FormData>({
     resolver: zodResolver(RegisterFormSchema),
   });
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);  
 
   const [isPending, setIsPending] = useState(false);
       const value = useContext(AuthContext)
@@ -48,8 +49,12 @@ export default function RegistrationPage() {
       const userId = res.data.userId
       const username = res.data.username
       value.login(token, userId, username)
-    } catch (error) {
-      console.error("Submission error:", error);
+    } catch (error: any) {
+        console.error("Server error:", error.response.data);
+      setErrorMessage(
+        error?.response.data.message || "Registration failed. Please try again later."
+      );
+
     } finally {
       setIsPending(false);
     }
@@ -58,7 +63,10 @@ export default function RegistrationPage() {
   return (
     <div className="bg-white m-auto p-8 rounded-lg shadow-md w-96">
       <h1 className="text-2xl font-bold mb-6 text-center">Register</h1>
-
+{errorMessage &&
+<div className="p-4 text-center rounded-md bg-red-50">
+      <p className="text-red-500 mb-4">{errorMessage}</p>
+    </div>}
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div>
           <input
@@ -111,7 +119,7 @@ export default function RegistrationPage() {
                <button
           disabled={isPending}
           type="submit"
-          className="bg-blue-500 text-white px-4 py-2 rounded-md w-full"
+          className="hover:cursor-pointer bg-blue-500 text-white px-4 py-2 rounded-md w-full"
         >
           {isPending ? "Loading..." : "Register"}
         </button>

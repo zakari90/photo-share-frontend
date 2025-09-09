@@ -126,7 +126,7 @@ export default function MyPostsPage() {
     posts.map((post) => (
       <div
         key={post._id}
-        className="relative rounded-xl group w-full h-64 overflow-hidden bg-amber-300 cursor-pointer"
+        className="relative rounded-xl group w-full h-64 overflow-hidden bg-blue-100 cursor-pointer"
       >
         <BiEdit
           className="absolute top-4 left-2 text-blue-500 text-2xl cursor-pointer z-10"

@@ -99,7 +99,7 @@ export default function HomePage() {
         onClick={() => setSelectedPost(post)}
       >
         {/* Image Container */}
-        <div className="relative w-full h-64 overflow-hidden bg-amber-300">
+        <div className="relative w-full h-64 overflow-hidden bg-blue-100">
           <img
             src={API_URL + post.imageUrl}
             alt={post.description || "Photo"}
