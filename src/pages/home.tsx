@@ -1,102 +1,173 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import { BsHeartFill } from "react-icons/bs";
 import instance from "../config/axios";
-import { GET_ALL_POSTS } from "../config/urls";
+import { API_URL, GET_ALL_POSTS } from "../config/urls";
+import AuthContext from "../context/auth-context";
 
-export type ImageProps={
-  id:string;
-  url:string;
-  description?:string;
-  userId:string;
-  createdAt:Date;
-  updatedAt:Date;
-  likes?:[]
-}
+// ----------------------
+// Type Definitions
+// ----------------------
+type PostProps = {
+  _id: string;
+  title?: string;
+  description?: string;
+  imageUrl: string;
+  creator: {
+    _id: string;
+    username: string;
+  };
+  createdAt: string;
+  updatedAt: string;
+};
 
-const images: ImageProps[]=[
-  {
-    id:"1",
-    url:"https://images.unsplash.com/photo-1506744038136-46273834b3fb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80",
-    description:"A beautiful sunrise",
-    userId:"user1",
-    createdAt:new Date(),
-    updatedAt:new Date(),
-  },
-  {
-    id:"2",
-    url:"https://images.unsplash.com/photo-1500534623283-312aade485b7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80",
-    description:"Mountain landscape",
-    userId:"user2",
-    createdAt:new Date(),
-    updatedAt:new Date(),
-  },
-  {
-    id:"3",
-    url:"https://images.unsplash.com/photo-1494526585095-c41746248156?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80",
-    description:"City skyline at night",
-    userId:"user3",
-    createdAt:new Date(),
-    updatedAt:new Date(),
-  }
-]
+type LikeStatus = {
+  [postId: string]: {
+    count: number;
+    userLiked: boolean;
+  };
+};
+
 export default function HomePage() {
-  const [selectedImage, setSelectedImage] = useState<ImageProps | null>(null);
-  const [posts, setPosts] = useState<any[] | null>(null);
-  
-useEffect(() => {
+  const [selectedPost, setSelectedPost] = useState<PostProps | null>(null);
+  const [posts, setPosts] = useState<PostProps[] | null>(null);
+  const [likeStatus, setLikeStatus] = useState<LikeStatus>({});
+  const [loading, setLoading] = useState<boolean>(true);
+
+  const auth = useContext(AuthContext);
+  const isLoggedIn = Boolean(auth?.token);
+
+  useEffect(() => {
     async function fetchPosts() {
       try {
         const res = await instance.get(GET_ALL_POSTS);
-        setPosts(res.data);  // assuming res.data is an array of posts
+        setPosts(res.data);
+
+        if (isLoggedIn) {
+          for (const post of res.data) {
+            fetchLikeStatus(post._id);
+          }
+        }
       } catch (error) {
         console.error("Failed to fetch posts", error);
+      } finally {
+        setLoading(false);
       }
     }
 
     fetchPosts();
-  }, []);
+  }, [isLoggedIn]);
 
-  console.log(posts[0]._id);
-  console.log(posts[0].creator.username);
-  console.log(posts[0].description);
-  console.log(posts[0].imageUrl);
-  console.log(posts[0].title);
-  
+
+  async function fetchLikeStatus(postId: string) {
+    try {
+      const res = await instance.get(`/posts/${postId}/like-count`,
+                {headers: { Authorization: auth.token }}
+
+      );
+      setLikeStatus((prev) => ({
+        ...prev,
+        [postId]: {
+          count: res.data.likes,
+          userLiked: res.data.userLiked,
+        },
+      }));
+    } catch (error) {
+      console.error("Failed to fetch like status", error);
+    }
+  }
+
+  async function handleLike(postId: string) {    
+    try {
+      await instance.put(`/posts/${postId}/like`,null,
+        {headers: { Authorization: auth.token }}
+      );
+      fetchLikeStatus(postId);
+    } catch (error) {
+      console.error("Failed to toggle like", error);
+    }
+  }
+
   return (
-<>
-<div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-0 m-4 ">
-  {images.map((image) => (
-    <div
-      key={image.id}
-      className="cursor-pointer"
-      onClick={() => setSelectedImage(image)}
-    >
-      <img
-        src={image.url}
-        alt={image.description || "Photo"}
-        className="w-full h-auto transition-transform duration-200 hover:scale-105"
-      />
-    </div>
-  ))}
+    <>
+      {loading && (
+        <p className="text-center text-white text-lg mt-10">Loading posts...</p>
+      )}
+
+ <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-0 m-4">
+  {posts ? (
+    posts.map((post) => (
+      <div
+        key={post._id}
+        className="cursor-pointer group relative w-full h-full"
+        onClick={() => setSelectedPost(post)}
+      >
+        {/* Image Container */}
+        <div className="relative w-full h-64 overflow-hidden bg-amber-300">
+          <img
+            src={API_URL + post.imageUrl}
+            alt={post.description || "Photo"}
+            className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-105"
+          />
+          {isLoggedIn && (
+            <div
+              onClick={(e) => {
+                e.stopPropagation();
+                handleLike(post._id);
+              }}
+              className="absolute bottom-4 left-4 bg-gray-400 bg-opacity-60 rounded-full px-3 py-1 flex items-center gap-1 text-white cursor-pointer hover:scale-110 transition-transform"
+            >
+              <BsHeartFill
+                className={`text-lg ${
+                  likeStatus[post._id]?.userLiked
+                    ? "text-blue-500"
+                    : "text-gray-400"
+                }`}
+              />
+              <span className="text-sm">
+                {likeStatus[post._id]?.count ?? 0}
+              </span>
+            </div>
+          )}
+        </div>
+      </div>
+    ))
+  ) : (
+    <p className="text-center text-white text-lg mt-10">No posts available.</p>
+  )}
 </div>
-      {selectedImage && (
+
+      {selectedPost && (
         <div
           className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50"
-          onClick={() => setSelectedImage(null)}
+          onClick={() => setSelectedPost(null)}
         >
-          <div className="relative max-w-4xl w-full px-4">
+          <div
+            className="absolute p-10 md:p-2 top-5 md:top-5 max-w-xl "
+            onClick={(e) => e.stopPropagation()}
+          >
             <img
-              src={selectedImage.url}
-              alt={selectedImage.description || "Full image"}
+              src={API_URL + selectedPost.imageUrl}
+              alt={selectedPost.description || "Full image"}
               className="w-full h-auto rounded-md object-contain"
             />
-            {selectedImage.description && (
-              <p className="text-white mt-4 text-center">
-                {selectedImage.description}
-              </p>
-            )}
+
+            <div className="text-white mt-4 text-center overflow-auto">
+              {selectedPost.title && (
+                <p className="text-lg font-semibold">{selectedPost.title}</p>
+              )}
+              {selectedPost.description && (
+                <p className="text-sm mt-1">{selectedPost.description}</p>
+              )}
+              {selectedPost.creator?.username && (
+                <p className="text-xs text-gray-400 mt-2">
+                  by {selectedPost.creator.username}
+                </p>
+              )}
+            </div>
+
             <button
-              onClick={() => setSelectedImage(null)}
-              className="absolute top-4 right-4 text-white text-2xl font-bold"
+              onClick={() => setSelectedPost(null)}
+              className="absolute top-1 right-6 text-white text-2xl font-bold"
             >
               ✕
             </button>
@@ -104,5 +175,5 @@ useEffect(() => {
         </div>
       )}
     </>
-  )
+  );
 }

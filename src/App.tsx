@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import MainNavigation from './components/navBar';
 import PrivateRoute from './components/PrivateRoute';
 import AuthContext from './context/auth-context';
 import HomePage from './pages/home';
 import LoginPage from './pages/login';
 import NewPost from './pages/newPost';
 import RegistrationPage from './pages/registration';
-import UserPage from './pages/userPost';
-import MainNavigation from './components/navBar';
+import MyPostsPage from './pages/userPost';
 
 function App() {
   const [token, setToken] = useState<string>(localStorage.getItem('token') || '');
@@ -51,7 +51,7 @@ function App() {
 
               <Route element={<PrivateRoute />}>
                 <Route path="/newPost" element={<NewPost />} />
-                <Route path="/userPage" element={<UserPage />} />
+                <Route path="/userPage" element={<MyPostsPage />} />
               </Route>
             </Routes>
           </main>
