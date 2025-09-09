@@ -1,8 +1,11 @@
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Link } from 'react-router-dom';
+import instance from "../config/axios";
+import { LOGIN_URL } from "../config/urls";
+import AuthContext from "../context/auth-context";
 
 const LoginFormSchema = z.object(
     {
@@ -22,23 +25,32 @@ export default function LoginPage() {
     resolver: zodResolver(LoginFormSchema),
   });
 
+  const value = useContext(AuthContext);
   const [isPending, setIsPending] = useState(false);
-
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);  
+  useEffect(() => {}, [value]);
   const onSubmit = async (data: FormData) => {
     setIsPending(true);
     try {
-      console.log("Form Data:", data);
-      await new Promise((resolve) => setTimeout(resolve, 2000)); // simulate API call
+      const res = await instance.post(LOGIN_URL, data);
+      const token = res.data.accessToken
+      const userId = res.data.userId
+      const username = res.data.username
+      value.login(token, userId, username)      
     } catch (error) {
       console.error("Submission error:", error);
+      setErrorMessage("Login failed. Please check your credentials and try again.");
     } finally {
       setIsPending(false);
     }
   };
 
   return (
-    <div className="bg-white p-8 rounded-lg shadow-md w-96">
-    <h1 className="text-2xl font-bold mb-6 text-center">Register</h1>
+    <div className="bg-white  m-auto mt-4 p-8 rounded-lg shadow-md w-96">
+    <h1 className="text-2xl font-bold mb-6 text-center">Login</h1>
+{errorMessage &&     <div className="p-4 text-center rounded-md bg-red-50">
+      <p className="text-red-500 mb-4">{errorMessage}</p>
+    </div>}
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
 
       <div>
@@ -67,7 +79,7 @@ export default function LoginPage() {
           {isPending ? "Loading..." : "LogIn"}
         </button>
         <p>
-          Don't have an account? <Link to="/register" className="text-blue-500">Rgister</Link>
+          Don't have an account? <Link to="/register" className="text-blue-500">Register</Link>
         </p>
       </div>
 

@@ -1,59 +1,138 @@
-import React, { useState } from 'react'
+import { useState, useContext } from 'react';
+import { BiUpload } from 'react-icons/bi';
+import instance from '../config/axios';
+import AuthContext from '../context/auth-context';
+import { CREATE_POST } from '../config/urls';
 
 function NewPost() {
-      const [isPending, setIsPending] = useState(false);
-      const [fileName, setFileName] = useState('No file selected');
+  const [isPending, setIsPending] = useState(false);
+  const [fileName, setFileName] = useState('No file selected');
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [file, setFile] = useState<File | null>(null);
+  const [previewImage, setPreviewImage] = useState<string>('');
+  const auth = useContext(AuthContext);
 
-  const handleFileChange = (e) => {
-    const file = e.target.files?.[0];
-    setFileName(file ? file.name : 'No file selected');
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = e.target.files?.[0];
+
+    if (selectedFile) {
+      setFile(selectedFile);
+      setFileName(selectedFile.name);
+      setPreviewImage(URL.createObjectURL(selectedFile));
+    } else {
+      setFile(null);
+      setFileName('No file selected');
+      setPreviewImage('');
+    }
   };
-  return (
-    <div className="bg-white flex flex-col gap-4 p-8 rounded-lg shadow-md w-96">
-        <h1 className=''>New Post</h1>
-        <input type="text"
-        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
-        placeholder='Title' />
-        <textarea 
-        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
-        placeholder='Description'
-        /> 
 
-    <div className=" flex flex-col items-start space-y-2">
-      <label
-        htmlFor="file-upload"
-        className="m-auto cursor-pointer inline-block bg-yellow-200 text-black px-4 py-2 rounded-md hover:bg-blue-700 transition"
-      >
-        <svg fill="#000000" height="20px" width="20px" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg"
-	 viewBox="0 0 491.601 491.601" xml:space="preserve">
-<g>
-	<path d="M463.1,175.45c-14-14.3-31.5-24-50.7-28.1c-4.9-37.4-22.1-71.9-49.4-98.6c-31.7-30.9-73.6-48-117.9-48s-86.2,17-117.9,48
-		c-27.4,26.8-44.6,61.4-49.5,98.9c-44.8,10.4-77.7,50.4-77.7,98c0,55.5,45.1,100.6,100.6,100.6h124.8v124.2
-		c0,10.7,9.7,20.4,20.4,20.4c10.7,0,20.4-8.6,20.4-20.4v-124.2H391c55.5,0,100.6-45.1,100.6-100.6
-		C491.7,219.25,481.5,194.25,463.1,175.45z M391.1,305.25H266.3v-81.6l27.9,26.7c8.6,7.5,21.5,7.5,29-1.1s7.5-21.5-1.1-29
-		l-62.2-60.2c-13.5-10.4-23.6-3.2-27.9,0l-62.3,60.1c-8.6,7.5-8.6,20.4-1.1,29s20.4,8.6,29,1.1l27.9-26.7v81.6H100.7
-		c-32.9,0-59.6-26.7-59.6-59.6c0-31.9,24.9-58.1,56.8-59.5c10.7-0.5,19.3-9.2,19.5-20c1.8-69.8,57.9-124.4,127.7-124.4
-		s125.9,54.6,127.7,124.4c0.3,10.9,9,19.7,19.9,20c32.5,0.9,57.9,27.1,57.9,59.6C450.7,278.45,423.9,305.25,391.1,305.25z"/>
-</g>
-</svg>
-      </label>
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!title || !description || !file) {
+      alert('Please fill in all fields and select an image.');
+      return;
+    }
+
+    setIsPending(true);
+
+    try {
+      const formData = new FormData();
+      formData.append('title', title);
+      formData.append('description', description);
+      formData.append('image', file); // 'image' must match your backend field name
+
+      const response = await instance.post(CREATE_POST, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: auth.token,
+        },
+      });
+
+      console.log('Upload successful:', response.data);
+      alert('Post uploaded successfully!');
+
+      // Reset form
+      setTitle('');
+      setDescription('');
+      setFile(null);
+      setFileName('No file selected');
+      setPreviewImage('');
+    } catch (error) {
+      console.error('Upload failed:', error);
+      alert('Failed to upload post.');
+    } finally {
+      setIsPending(false);
+    }
+  };
+
+  return (
+    <form
+      onSubmit={handleSubmit}
+      className="bg-blue-50 m-auto flex flex-col gap-4 p-8 rounded-lg shadow-md w-full max-w-md mt-8"
+    >
+      <h1 className="text-2xl text-center font-bold text-blue-600">New Post</h1>
+
+      {/* Title Input */}
       <input
-        id="file-upload"
-        type="file"
-        className="hidden"
-        onChange={handleFileChange}
+        type="text"
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
+        placeholder="Title"
+        required
       />
-      <p className="m-auto text-sm text-gray-600">{fileName}</p>
-    </div>
-   <button
-          disabled={isPending}
-          type="submit"
-          className="m-auto bg-blue-500 text-white px-4 py-2 rounded-md w-fit"
+
+      {/* Description Textarea */}
+      <textarea
+        value={description}
+        onChange={(e) => setDescription(e.target.value)}
+        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
+        placeholder="Description"
+        rows={4}
+        required
+      />
+
+      {/* File Upload */}
+      <div className="flex flex-col items-center gap-2">
+        <label
+          htmlFor="file-upload"
+          className="cursor-pointer inline-flex items-center gap-2 bg-yellow-200 text-black px-4 py-2 rounded-md hover:bg-yellow-300 transition"
         >
-          {isPending ? "Loading..." : "submit"}
-        </button>    
-    </div>
-  )
+          <BiUpload className="text-xl" />
+          Upload Image
+        </label>
+        <input
+          id="file-upload"
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={handleFileChange}
+          required
+        />
+        <p className="text-sm text-gray-600">{fileName}</p>
+
+        {/* Image Preview */}
+        {previewImage && (
+          <img
+            src={previewImage}
+            alt="Preview"
+            className="w-32 h-32 object-cover rounded-md mt-2 border border-gray-300"
+          />
+        )}
+      </div>
+
+      {/* Submit Button */}
+      <button
+        disabled={isPending || !file}
+        type="submit"
+        className="bg-blue-500 text-white px-6 py-2 rounded-md w-fit mx-auto hover:bg-blue-600 transition disabled:opacity-50"
+      >
+        {isPending ? 'Uploading...' : 'Submit'}
+      </button>
+    </form>
+  );
 }
 
-export default NewPost
+export default NewPost;

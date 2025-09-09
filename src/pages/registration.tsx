@@ -1,8 +1,11 @@
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import instance from "../config/axios";
+import { REGISTER_URL } from "../config/urls";
+import AuthContext from "../context/auth-context";
 
 const RegisterFormSchema = z
   .object({
@@ -33,12 +36,18 @@ export default function RegistrationPage() {
   });
 
   const [isPending, setIsPending] = useState(false);
+      const value = useContext(AuthContext)
+  
+  useEffect(() => {}, [value]);
 
   const onSubmit = async (data: FormData) => {
     setIsPending(true);
     try {
-      console.log("Form Data:", data);
-      await new Promise((resolve) => setTimeout(resolve, 2000)); // simulate API call
+      const res = await instance.post(REGISTER_URL, data);
+      const token = res.data.accessToken
+      const userId = res.data.userId
+      const username = res.data.username
+      value.login(token, userId, username)
     } catch (error) {
       console.error("Submission error:", error);
     } finally {
@@ -47,7 +56,7 @@ export default function RegistrationPage() {
   };
 
   return (
-    <div className="bg-white p-8 rounded-lg shadow-md w-96">
+    <div className="bg-white m-auto p-8 rounded-lg shadow-md w-96">
       <h1 className="text-2xl font-bold mb-6 text-center">Register</h1>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -99,12 +108,12 @@ export default function RegistrationPage() {
           )}
         </div>
             <div>
-        <button
+               <button
           disabled={isPending}
           type="submit"
-          className={`            `}
+          className="bg-blue-500 text-white px-4 py-2 rounded-md w-full"
         >
-          {isPending ? "Loading..." : "LogIn"}
+          {isPending ? "Loading..." : "Register"}
         </button>
         <p>
           allredy have an account? <Link to="/login" className="text-blue-500">Login</Link>

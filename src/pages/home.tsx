@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import instance from "../config/axios";
+import { GET_ALL_POSTS } from "../config/urls";
 
 export type ImageProps={
   id:string;
@@ -38,9 +40,30 @@ const images: ImageProps[]=[
 ]
 export default function HomePage() {
   const [selectedImage, setSelectedImage] = useState<ImageProps | null>(null);
+  const [posts, setPosts] = useState<any[] | null>(null);
+  
+useEffect(() => {
+    async function fetchPosts() {
+      try {
+        const res = await instance.get(GET_ALL_POSTS);
+        setPosts(res.data);  // assuming res.data is an array of posts
+      } catch (error) {
+        console.error("Failed to fetch posts", error);
+      }
+    }
+
+    fetchPosts();
+  }, []);
+
+  console.log(posts[0]._id);
+  console.log(posts[0].creator.username);
+  console.log(posts[0].description);
+  console.log(posts[0].imageUrl);
+  console.log(posts[0].title);
+  
   return (
 <>
-<div className="grid grid-cols-2 md:grid-cols-4 gap-0">
+<div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-0 m-4 ">
   {images.map((image) => (
     <div
       key={image.id}
