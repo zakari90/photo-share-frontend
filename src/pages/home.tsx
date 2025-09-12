@@ -3,6 +3,7 @@ import { BsHeartFill } from "react-icons/bs";
 import instance from "../config/axios";
 import { API_URL, GET_ALL_POSTS } from "../config/urls";
 import AuthContext from "../context/auth-context";
+import { Commet } from "react-loading-indicators";
 
 export type PostProps = {
   _id: string;
@@ -54,6 +55,7 @@ export default function HomePage() {
     fetchPosts();
   }, [isLoggedIn]);
 
+
   async function fetchLikeStatus(postId: string) {
     try {
       const res = await instance.get(`/posts/${postId}/like-count`,
@@ -86,8 +88,9 @@ export default function HomePage() {
   return (
     <>
       {loading && (
-        <p className="text-center text-white text-lg mt-10">Loading posts...</p>
-      )}
+        <div className="flex justify-center items-center h-96">
+<Commet color="#89acf3" size="medium" text="" textColor="" />        </div>
+)}
 
  <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-2 m-4">
   {posts ? (
@@ -127,7 +130,22 @@ export default function HomePage() {
       </div>
     ))
   ) : (
-    <p className="text-center text-white text-lg mt-10">No posts available.</p>
+    <div>
+      {loading ? null : 
+      (
+      <div className="col-span-full">
+        <img 
+        src="/no-post.png" 
+        alt="No posts" className="mx-auto mt-10 w-32 opacity-50" />
+
+      <p className="text-center text-lg mt-10">No posts available.</p>
+
+      </div>
+      
+      
+      )}
+
+    </div>
   )}
 </div>
 
