@@ -249,7 +249,7 @@ export default function MyPostsPage() {
           onClick={handleCancel}
         >
           <div
-            className="relative w-full max-w-xl bg-transparent"
+            className="relative w-full max-w-xl bg-transparent border-2 border-blue-400 p-4 rounded-md"
             onClick={(e) => e.stopPropagation()}
           >
             <img
