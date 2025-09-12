@@ -6,6 +6,7 @@ import AuthContext from "../context/auth-context";
 import { BiEdit } from "react-icons/bi";
 import { MdDelete } from "react-icons/md";
 import type { LikeStatus, PostProps } from "./home";
+import { Commet } from "react-loading-indicators";
 
 export default function MyPostsPage() {
   const [selectedPost, setSelectedPost] = useState<PostProps | null>(null);
@@ -165,9 +166,9 @@ export default function MyPostsPage() {
   return (
     <>
       {loading && (
-        <div className="flex justify-center items-center">
-          <div className="spinner-border animate-spin inline-block w-12 h-12 border-4 border-t-4 rounded-full text-blue-500"></div>
-        </div>
+         <div className="flex justify-center items-center h-96">
+<Commet color="#89acf3" size="medium" text="" textColor="" />
+      </div>
       )}
 
       <div className="relative grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-2 m-4">
@@ -184,6 +185,7 @@ export default function MyPostsPage() {
                   handleEdit(post);
                 }}
               />
+
               <MdDelete
                 className="absolute top-4 right-2 text-red-500 text-2xl cursor-pointer z-10"
                 onClick={(e) => {
