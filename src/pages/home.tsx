@@ -54,7 +54,6 @@ export default function HomePage() {
     fetchPosts();
   }, [isLoggedIn]);
 
-
   async function fetchLikeStatus(postId: string) {
     try {
       const res = await instance.get(`/posts/${postId}/like-count`,
@@ -90,7 +89,7 @@ export default function HomePage() {
         <p className="text-center text-white text-lg mt-10">Loading posts...</p>
       )}
 
- <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-0 m-4">
+ <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-2 m-4">
   {posts ? (
     posts.map((post) => (
       <div
@@ -98,8 +97,7 @@ export default function HomePage() {
         className="cursor-pointer group relative w-full h-full"
         onClick={() => setSelectedPost(post)}
       >
-        {/* Image Container */}
-        <div className="relative w-full h-64 overflow-hidden bg-blue-100">
+        <div className="relative w-full h-64 overflow-hidden rounded-xl bg-blue-100">
           <img
             src={API_URL + post.imageUrl}
             alt={post.description || "Photo"}
@@ -111,7 +109,7 @@ export default function HomePage() {
                 e.stopPropagation();
                 handleLike(post._id);
               }}
-              className="absolute bottom-4 left-4 bg-gray-400 bg-opacity-60 rounded-full px-3 py-1 flex items-center gap-1 text-white cursor-pointer hover:scale-110 transition-transform"
+              className="absolute bottom-4 left-4 bg-black bg-opacity-60 rounded-full px-3 py-1 flex items-center gap-1 text-white cursor-pointer hover:scale-110 transition-transform"
             >
               <BsHeartFill
                 className={`text-lg ${
@@ -162,12 +160,6 @@ export default function HomePage() {
         )}
       </div>
 
-      <button
-        onClick={() => setSelectedPost(null)}
-        className="absolute top-1 right-2 text-white text-2xl font-bold"
-      >
-        ✕
-      </button>
     </div>
   </div>
 )}
