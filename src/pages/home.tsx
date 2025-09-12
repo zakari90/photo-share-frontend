@@ -153,7 +153,7 @@ export default function HomePage() {
     onClick={() => setSelectedPost(null)}
   >
     <div
-      className="relative max-w-xl w-full bg-transparent"
+      className="relative w-full max-w-xl bg-transparent border-2 border-blue-400 p-4 rounded-md"
       onClick={(e) => e.stopPropagation()}
     >
       <img
