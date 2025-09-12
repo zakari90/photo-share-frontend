@@ -134,22 +134,12 @@ export default function HomePage() {
       </div>
     ))
   ) : (
-    <div>
-      {loading ? null : 
-      (
       <div className="col-span-full">
         <img 
         src="/no-post.png" 
         alt="No posts" className="mx-auto mt-10 w-32 opacity-50" />
-
       <p className="text-center text-lg mt-10">No posts available.</p>
-
       </div>
-      
-      
-      )}
-
-    </div>
   )}
 </div>
 
