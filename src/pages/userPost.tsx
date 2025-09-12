@@ -176,8 +176,18 @@ export default function MyPostsPage() {
       )}
 
       <div className="relative grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-2 m-4">
-        {posts ? (
-          posts.map((post) => (
+        {posts && posts.length === 0 ?
+  (
+      <div className="col-span-full">
+        <img 
+        src="/no-post.png" 
+        alt="No posts" className="mx-auto mt-10 w-32 opacity-50" />
+
+      <p className="text-center text-lg mt-10">No posts to show.</p>
+
+      </div>
+  ) : (
+          posts?.map((post) => (
             <div
               key={post._id}
               className="relative rounded-xl group w-full h-64 overflow-hidden bg-blue-100 cursor-pointer"
@@ -230,14 +240,7 @@ export default function MyPostsPage() {
               )}
             </div>
           ))
-        ) : (
-      <div className="col-span-full">
-        <img 
-        src="/no-post.png" 
-        alt="No posts" className="mx-auto mt-10 w-32 opacity-50" />
-      <p className="text-center text-lg mt-10">No posts available.</p>
-      </div>
-        )}
+        ) }
       </div>
 
       {selectedPost && (
